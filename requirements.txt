@@ -36,3 +36,4 @@ tifffile==2022.5.4
 tqdm==4.64.0
 Werkzeug==2.1.2
 zipp==3.8.1
+lightgbm==3.3.2
