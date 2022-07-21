@@ -1,28 +1,24 @@
 # Dependencies
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 from functions import *
 import json
-
 import pandas as pd
-import numpy as np
 import shap
-
-
 
 # Your API definition
 app = Flask(__name__)
-#load model
+# load model
 model = load_model()
-#Download datasets
+# Download datasets
 data = pd.read_csv("datasets/train_data.csv", index_col='SK_ID_CURR')
 
 
 @app.route('/api/predict', methods=['POST'])
-def predict_customer_ID():
+def predict_customer_id():
     json_ = json.loads(request.data)
     id_client = json_["SK_ID_CURR"]
     check = check_id(id_client)
-    if check :
+    if check:
         explanation = lime_explanation(id_client)
         client = data[data.index == id_client].drop(['TARGET'], axis=1)
         client_preproc = preprocessing(client)
@@ -34,10 +30,10 @@ def predict_customer_ID():
                "proba_yes": str(y_proba[0][0]),
                "proba_no": str(y_proba[0][1]),
                "lime_explanation": explanation.as_list()
-           }
+               }
         return jsonify(res)
     else:
-        res = {"statut_code":str(0),
+        res = {"statut_code": str(0),
                "erreur": "This ID doesn't exist"}
         return jsonify(res)
 
@@ -45,7 +41,7 @@ def predict_customer_ID():
 @app.route('/api/get/<id>', methods=['GET'])
 def get_infos(id):
     check = check_id(int(id))
-    if check :
+    if check:
         client = data[data.index == int(id)]
         client = client.values
         columns_df = list(data.columns)
@@ -56,7 +52,7 @@ def get_infos(id):
 
         return jsonify(res)
     else:
-        res = {"statut_code":str(0),
+        res = {"statut_code": str(0),
                "erreur": "This ID doesn't exist"}
         return jsonify(res)
 
